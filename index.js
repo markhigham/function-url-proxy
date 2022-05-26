@@ -65,7 +65,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.all("*", async (req, res) => {
   const fullUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
-  debug(`${req.method} ${fullUrl}`);
+  console.log(`${req.method} ${req.path}`);
   const u = new URL(fullUrl);
 
   const packaged = {
