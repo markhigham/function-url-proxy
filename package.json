@@ -9,7 +9,14 @@
     "debug": "DEBUG=function* nodemon index.js -- test.js -f handler"
   },
   "keywords": [],
-  "author": "",
+  "author": {
+    "name": "Mark Higham",
+    "email": "mark.higham@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/markhigham/function-url-proxy"
+  },
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^2.0.16",
