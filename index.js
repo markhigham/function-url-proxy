@@ -8,7 +8,6 @@ const debug = require("debug")("function-url-proxy");
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const cors = require("cors");
 
 const uuid = require("uuid");
 
@@ -64,9 +63,30 @@ if (handler.constructor.name !== "AsyncFunction") {
 }
 
 const app = express();
-app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+/**
+ * just allow all cors requests and ignore any options pre-flight checks
+ */
+ app.use((req, res, next) => {
+  const method = req.method;
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+
+  if (method == "OPTIONS") {
+    res.status(200).send("aah yes... options");
+    res.end();
+    return;
+  }
+
+  next();
+});
+
 
 app.all("*", async (req, res) => {
   const fullUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
