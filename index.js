@@ -67,26 +67,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 /**
- * just allow all cors requests and ignore any options pre-flight checks
+ * converts an express query object into the same format as lambda
+ * @param query: Request.Query
+ * @returns {{}}
  */
- app.use((req, res, next) => {
-  const method = req.method;
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
+function changeExpressQueryToLambda(query) {
+  const result = {};
+  for (const [key, value] of Object.entries(query)) {
+    if (!Array.isArray(value)) {
+      result[key] = value;
+      continue;
+    }
 
-  if (method == "OPTIONS") {
-    res.status(200).send("aah yes... options");
-    res.end();
-    return;
+    result[key] = value.join(",");
   }
-
-  next();
-});
-
+  return result;
+}
 
 app.all("*", async (req, res) => {
   const fullUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
@@ -94,7 +90,7 @@ app.all("*", async (req, res) => {
   const u = new URL(fullUrl);
 
   const packaged = {
-    queryStringParameters: req.query,
+    queryStringParameters: changeExpressQueryToLambda(req.query),
     headers: req.headers,
     rawQueryString: u.search,
     rawPath: u.pathname,
@@ -108,7 +104,13 @@ app.all("*", async (req, res) => {
   };
   debug(`calling ${moduleFilename.replace(".js", "")}.${handlerName}`);
   const result = await handler(packaged);
-  res.send(result);
+
+  if (result.headers) {
+    for (const [key, value] of Object.entries(result.headers)) {
+      res.set(key, value);
+    }
+  }
+  res.status(result.statusCode).send(result.body);
 });
 
 app.listen(port, host, () => {
