@@ -3,12 +3,16 @@
 const argv = require("minimist")(process.argv.slice(2));
 const path = require("path");
 const showHelp = require("./usage");
-const express = require("express");
+
 const debug = require("debug")("function-url-proxy");
+
+const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
+
 const uuid = require("uuid");
 
-let port = 3000;
+let port = 10808;
 let host = "0.0.0.0";
 
 if (argv.h) {
@@ -60,6 +64,7 @@ if (handler.constructor.name !== "AsyncFunction") {
 }
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
