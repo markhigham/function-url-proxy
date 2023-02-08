@@ -89,7 +89,7 @@ app.all("*", async (req, res) => {
   console.log(`${req.method} ${req.path}`);
   const u = new URL(fullUrl);
 
-  const packaged = {
+  const packagedEvent = {
     queryStringParameters: changeExpressQueryToLambda(req.query),
     headers: req.headers,
     rawQueryString: u.search,
@@ -103,7 +103,10 @@ app.all("*", async (req, res) => {
     },
   };
   debug(`calling ${moduleFilename.replace(".js", "")}.${handlerName}`);
-  const result = await handler(packaged);
+
+  const context = { awsRequestId: uuid.v4() };
+
+  const result = await handler(packagedEvent, context);
 
   if (result.headers) {
     for (const [key, value] of Object.entries(result.headers)) {
