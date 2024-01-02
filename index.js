@@ -2,6 +2,7 @@
 
 const argv = require("minimist")(process.argv.slice(2));
 const path = require("path");
+const fs = require("fs");
 const showHelp = require("./usage");
 
 const debug = require("debug")("function-url-proxy");
@@ -27,6 +28,7 @@ if (argv._.length < 1) {
 
 if (argv.p) {
   port = argv.p;
+  debug(`port: ${port}`);
 }
 
 const moduleFilename = argv._[0];
@@ -39,11 +41,18 @@ if (argv.f) {
   debug(`handlerName: ${handlerName}`);
 }
 
+const dotEnvPath = path.resolve(".env");
+if(fs.existsSync(dotEnvPath)) {
+  require('dotenv').config({ path: dotEnvPath });
+  debug(`loaded .env from ${dotEnvPath}`);
+}
+
+
 let handler;
 
 try {
   const module = require(filename);
-  debug("handlerName", handlerName);
+  debug(`using handlerName: ${handlerName}`);
   handler = module[handlerName];
 
   if (!handler) {
