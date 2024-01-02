@@ -1,6 +1,6 @@
 function showHelp() {
-  const pkg = require("./package.json");
-  const version = pkg.version;
+  const pkg = require('./package.json')
+  const version = pkg.version
   console.log(`function-url-proxy [-f handler] test_file
   version: ${version}
   
@@ -11,7 +11,7 @@ function showHelp() {
   
   -p (optional) Port number. Defaults to 3000
   
-      `);
+      `)
 }
 
-module.exports = showHelp;
+module.exports = showHelp

@@ -6,7 +6,8 @@
   "bin": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "DEBUG=function* nodemon index.js -- test.js -f handler"
+    "debug": "DEBUG=function* nodemon index.js -- test.js -f handler",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": {
@@ -19,6 +20,7 @@
   },
   "license": "ISC",
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "nodemon": "^3.0.2",
     "prettier": "^3.1.1"
   },
